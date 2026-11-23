@@ -106,6 +106,55 @@
             opacity: 0;
         }
 
+        /* Ambient Refractive Orbs behind Liquid Glass */
+        .ambient-orbs {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(85px);
+            opacity: 0.42;
+            transition: background 0.6s ease;
+            animation: orb-drift 18s ease-in-out infinite alternate;
+        }
+
+        .orb-1 {
+            width: 420px;
+            height: 420px;
+            top: -80px;
+            left: 10%;
+            background: radial-gradient(circle, var(--accent-red-bright), transparent 70%);
+        }
+
+        .orb-2 {
+            width: 360px;
+            height: 360px;
+            top: 42%;
+            right: 6%;
+            background: radial-gradient(circle, var(--accent-red), transparent 70%);
+            animation-delay: -6s;
+        }
+
+        .orb-3 {
+            width: 340px;
+            height: 340px;
+            bottom: -60px;
+            left: 28%;
+            background: radial-gradient(circle, var(--accent-red-dark), transparent 70%);
+            animation-delay: -11s;
+        }
+
+        @keyframes orb-drift {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(35px, 28px) scale(1.12); }
+        }
+
         /* Subtle Ambient Vignette & CRT Scanlines */
         .crt-overlay {
             position: fixed;
@@ -113,14 +162,14 @@
             z-index: 2;
             pointer-events: none;
             background:
-                radial-gradient(circle at 50% 0%, rgba(184, 41, 47, 0.06), transparent 55%),
-                radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.65) 100%),
+                radial-gradient(circle at 50% 0%, var(--accent-red-soft), transparent 55%),
+                radial-gradient(ellipse at center, transparent 58%, rgba(0, 0, 0, 0.55) 100%),
                 repeating-linear-gradient(
                     to bottom,
                     rgba(255, 255, 255, 0) 0px,
                     rgba(255, 255, 255, 0) 2px,
-                    rgba(0, 0, 0, 0.16) 3px,
-                    rgba(0, 0, 0, 0.16) 4px
+                    rgba(0, 0, 0, 0.12) 3px,
+                    rgba(0, 0, 0, 0.12) 4px
                 );
             transition: opacity 0.3s ease;
         }
@@ -326,26 +375,28 @@
             color: var(--text-bright);
         }
 
-        /* Card Component with Liquid Glass & Mouse Spotlight */
+        /* Card Component with Apple-style Liquid Glass & Mouse Spotlight */
         .card {
             --mouse-x: 50%;
             --mouse-y: 50%;
             background: linear-gradient(
-                145deg,
-                rgba(22, 22, 28, 0.58) 0%,
-                rgba(10, 10, 14, 0.50) 55%,
-                rgba(18, 10, 13, 0.56) 100%
+                135deg,
+                rgba(255, 255, 255, 0.095) 0%,
+                rgba(255, 255, 255, 0.025) 45%,
+                rgba(10, 10, 14, 0.32) 100%
             );
-            backdrop-filter: blur(22px) saturate(165%);
-            -webkit-backdrop-filter: blur(22px) saturate(165%);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 12px;
-            padding: 1.5rem;
+            backdrop-filter: blur(22px) saturate(190%) brightness(1.06);
+            -webkit-backdrop-filter: blur(22px) saturate(190%) brightness(1.06);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 22px;
+            padding: 1.55rem;
             box-shadow:
-                inset 0 1px 0 rgba(255, 255, 255, 0.14),
-                inset 1px 0 0 rgba(255, 255, 255, 0.06),
-                inset 0 -1px 0 rgba(0, 0, 0, 0.35),
-                0 12px 36px rgba(0, 0, 0, 0.48);
+                inset 0 1.5px 1px rgba(255, 255, 255, 0.42),
+                inset 1.5px 0 1px rgba(255, 255, 255, 0.18),
+                inset 0 -2px 8px rgba(255, 255, 255, 0.08),
+                inset 0 0 24px rgba(255, 255, 255, 0.03),
+                0 20px 50px rgba(0, 0, 0, 0.55),
+                0 0 26px var(--accent-red-soft);
             transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -375,8 +426,8 @@
             inset: 0;
             background: radial-gradient(
                 500px circle at var(--mouse-x) var(--mouse-y),
-                rgba(184, 41, 47, 0.11),
-                transparent 45%
+                var(--accent-red-glow),
+                transparent 48%
             );
             opacity: 0;
             transition: opacity 0.35s ease;
@@ -384,23 +435,31 @@
             z-index: 0;
         }
 
-        /* Top crimson hairline accent */
+        /* Curved liquid-glass lens highlight */
         .card::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--accent-red), transparent);
-            opacity: 0;
+            inset: 0;
+            background: linear-gradient(
+                125deg,
+                rgba(255, 255, 255, 0.12) 0%,
+                rgba(255, 255, 255, 0.02) 30%,
+                transparent 60%,
+                rgba(255, 255, 255, 0.06) 100%
+            );
+            opacity: 0.75;
             transition: opacity 0.35s ease;
             pointer-events: none;
         }
 
         .card:hover {
-            border-color: var(--card-border-hover);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55), 0 0 22px rgba(184, 41, 47, 0.14);
+            border-color: rgba(255, 255, 255, 0.34);
+            box-shadow:
+                inset 0 1.5px 1px rgba(255, 255, 255, 0.5),
+                inset 1.5px 0 1px rgba(255, 255, 255, 0.22),
+                inset 0 -2px 8px rgba(255, 255, 255, 0.10),
+                0 24px 56px rgba(0, 0, 0, 0.6),
+                0 0 28px var(--accent-red-glow);
         }
 
         .card:hover::before,
@@ -620,6 +679,12 @@
         .color-box:hover {
             transform: translateY(-2px) scale(1.12);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+        }
+
+        .color-box.active {
+            outline: 2px solid #ffffff;
+            outline-offset: 2px;
+            transform: scale(1.1);
         }
 
         .palette-hint {
@@ -1251,6 +1316,13 @@
     <!-- Background Matrix Canvas -->
     <canvas id="bg-canvas" aria-hidden="true"></canvas>
 
+    <!-- Ambient Refractive Light Orbs for Liquid Glass -->
+    <div class="ambient-orbs" aria-hidden="true">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
     <!-- Subtle CRT & Vignette Overlay -->
     <div class="crt-overlay" aria-hidden="true"></div>
 
@@ -1361,18 +1433,18 @@
                         <span class="info-val">Building custom network setups, embedded &amp; AI tools</span>
                     </div>
 
-                    <!-- Terminal Color Palette (Click to copy HEX) -->
+                    <!-- Terminal Color Palette (Click to switch theme & copy HEX) -->
                     <div class="palette-row">
                         <div class="color-palette" aria-label="Цветовая палитра терминала">
-                            <button type="button" class="color-box" style="background: #050506;" data-hex="#050506" title="Copy #050506"></button>
-                            <button type="button" class="color-box" style="background: #1e1e24;" data-hex="#1e1e24" title="Copy #1e1e24"></button>
-                            <button type="button" class="color-box" style="background: #8f1d24;" data-hex="#8f1d24" title="Copy #8f1d24"></button>
-                            <button type="button" class="color-box" style="background: #b8292f;" data-hex="#b8292f" title="Copy #b8292f"></button>
-                            <button type="button" class="color-box" style="background: #4b5563;" data-hex="#4b5563" title="Copy #4b5563"></button>
-                            <button type="button" class="color-box" style="background: #9ca3af;" data-hex="#9ca3af" title="Copy #9ca3af"></button>
-                            <button type="button" class="color-box" style="background: #e5e7eb;" data-hex="#e5e7eb" title="Copy #e5e7eb"></button>
+                            <button type="button" class="color-box" style="background: #050506;" data-hex="#050506" title="Obsidian (#050506)"></button>
+                            <button type="button" class="color-box" style="background: #1e1e24;" data-hex="#1e1e24" title="Midnight Indigo (#1e1e24)"></button>
+                            <button type="button" class="color-box" style="background: #8f1d24;" data-hex="#8f1d24" title="Dark Blood (#8f1d24)"></button>
+                            <button type="button" class="color-box active" style="background: #b8292f;" data-hex="#b8292f" title="Crimson (#b8292f)"></button>
+                            <button type="button" class="color-box" style="background: #4b5563;" data-hex="#4b5563" title="Steel Slate (#4b5563)"></button>
+                            <button type="button" class="color-box" style="background: #9ca3af;" data-hex="#9ca3af" title="Frost Silver (#9ca3af)"></button>
+                            <button type="button" class="color-box" style="background: #e5e7eb;" data-hex="#e5e7eb" title="Ice Platinum (#e5e7eb)"></button>
                         </div>
-                        <span class="palette-hint">click swatch to copy hex</span>
+                        <span class="palette-hint">click swatch to switch theme &amp; copy</span>
                     </div>
                 </div>
             </div>
@@ -1822,17 +1894,123 @@
         });
 
         // ==========================================
-        // 5. COLOR PALETTE COPY
+        // 5. COLOR PALETTE THEME SWITCHER & COPY
         // ==========================================
+        const themePresets = {
+            '#050506': {
+                name: 'Obsidian',
+                accent: '#71717a',
+                bright: '#a1a1aa',
+                dark: '#3f3f46',
+                glow: 'rgba(161, 161, 170, 0.22)',
+                soft: 'rgba(161, 161, 170, 0.08)',
+                borderHover: 'rgba(161, 161, 170, 0.5)'
+            },
+            '#1e1e24': {
+                name: 'Midnight Indigo',
+                accent: '#6366f1',
+                bright: '#818cf8',
+                dark: '#4338ca',
+                glow: 'rgba(99, 102, 241, 0.26)',
+                soft: 'rgba(99, 102, 241, 0.10)',
+                borderHover: 'rgba(129, 140, 248, 0.55)'
+            },
+            '#8f1d24': {
+                name: 'Dark Blood',
+                accent: '#8f1d24',
+                bright: '#c82d37',
+                dark: '#5e1116',
+                glow: 'rgba(143, 29, 36, 0.28)',
+                soft: 'rgba(143, 29, 36, 0.11)',
+                borderHover: 'rgba(200, 45, 55, 0.5)'
+            },
+            '#b8292f': {
+                name: 'Crimson',
+                accent: '#b8292f',
+                bright: '#dc353d',
+                dark: '#8f1d24',
+                glow: 'rgba(184, 41, 47, 0.24)',
+                soft: 'rgba(184, 41, 47, 0.09)',
+                borderHover: 'rgba(184, 41, 47, 0.5)'
+            },
+            '#4b5563': {
+                name: 'Steel Slate',
+                accent: '#64748b',
+                bright: '#94a3b8',
+                dark: '#475569',
+                glow: 'rgba(100, 116, 139, 0.24)',
+                soft: 'rgba(100, 116, 139, 0.09)',
+                borderHover: 'rgba(148, 163, 184, 0.5)'
+            },
+            '#9ca3af': {
+                name: 'Frost Silver',
+                accent: '#9ca3af',
+                bright: '#d1d5db',
+                dark: '#6b7280',
+                glow: 'rgba(156, 163, 175, 0.22)',
+                soft: 'rgba(156, 163, 175, 0.08)',
+                borderHover: 'rgba(209, 213, 219, 0.5)'
+            },
+            '#e5e7eb': {
+                name: 'Ice Platinum',
+                accent: '#e5e7eb',
+                bright: '#ffffff',
+                dark: '#9ca3af',
+                glow: 'rgba(229, 231, 235, 0.22)',
+                soft: 'rgba(229, 231, 235, 0.08)',
+                borderHover: 'rgba(255, 255, 255, 0.55)'
+            }
+        };
+
+        let rainPalette = {
+            bright: '#dc353d',
+            mid: '#b8292f',
+            dark: '#8f1d24'
+        };
+
+        function applyTheme(hex, save = true) {
+            const preset = themePresets[hex] || themePresets['#b8292f'];
+            const root = document.documentElement.style;
+            root.setProperty('--accent-red', preset.accent);
+            root.setProperty('--accent-red-bright', preset.bright);
+            root.setProperty('--accent-red-dark', preset.dark);
+            root.setProperty('--accent-red-glow', preset.glow);
+            root.setProperty('--accent-red-soft', preset.soft);
+            root.setProperty('--card-border-hover', preset.borderHover);
+
+            rainPalette = {
+                bright: preset.bright,
+                mid: preset.accent,
+                dark: preset.dark
+            };
+
+            document.querySelectorAll('.color-box').forEach(b => {
+                b.classList.toggle('active', b.dataset.hex === hex);
+            });
+
+            if (save) {
+                try { localStorage.setItem('wasy-theme-hex', hex); } catch (_) {}
+            }
+            return preset;
+        }
+
+        try {
+            const savedHex = localStorage.getItem('wasy-theme-hex');
+            if (savedHex && themePresets[savedHex]) {
+                applyTheme(savedHex, false);
+            }
+        } catch (_) {}
+
         document.querySelectorAll('.color-box').forEach(box => {
             box.addEventListener('click', () => {
                 const hex = box.dataset.hex;
+                const preset = applyTheme(hex, true);
                 if (navigator.clipboard) {
                     navigator.clipboard.writeText(hex).then(() => {
-                        showToast(`Copied ${hex} to clipboard`);
-                    }).catch(() => showToast(`Color: ${hex}`));
+                        showToast(`Theme: ${preset.name} (${hex} copied)`);
+                    }).catch(() => showToast(`Theme: ${preset.name} (${hex})`));
                 } else {
-                    showToast(`Color: ${hex}`);
+                    showToast(`Theme: ${preset.name} (${hex})`);
                 }
             });
         });
@@ -2198,11 +2376,11 @@ Steam    → <a href="https://steamcommunity.com/id/fakelekser/" target="_blank"
 
                 const rand = Math.random();
                 if (nearMouse) {
-                    ctx.fillStyle = '#dc353d';
+                    ctx.fillStyle = rainPalette.bright;
                 } else if (rand > 0.965) {
-                    ctx.fillStyle = '#b8292f';
+                    ctx.fillStyle = rainPalette.mid;
                 } else if (rand > 0.90) {
-                    ctx.fillStyle = '#8f1d24';
+                    ctx.fillStyle = rainPalette.dark;
                 } else if (rand > 0.62) {
                     ctx.fillStyle = '#42464f';
                 } else {
