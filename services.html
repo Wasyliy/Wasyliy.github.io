@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#050506">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="description" content="Wasy // Services — Оплата зарубежных подписок, Moodle, проекты, настройка 3X-UI VPN.">
+    <title>Wasy // Services</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23dc353d'/%3E%3Cstop offset='100%25' stop-color='%238f1d24'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%23050506'/%3E%3Crect x='1.5' y='1.5' width='61' height='61' rx='12.5' fill='none' stroke='rgba(255,255,255,0.14)' stroke-width='2'/%3E%3Cpath fill='url(%23g)' d='M32 10c-2.3 5.6-3.7 9.3-6.3 14.8 1.6 1.7 3.5 3.6 6.7 5.8-3.4-1.4-5.7-2.8-7.4-4.2C21.7 33.2 16.5 43.3 12 52c6.7-3.9 11.9-6.3 16.7-7.2-.2-.9-.3-1.9-.3-2.9v-.2c.1-4.1 2.2-7.3 4.8-7.1 2.6.2 4.5 3.7 4.4 7.8 0 .8-.1 1.5-.3 2.2 4.7.9 9.8 3.3 16.7 7.4-1.3-2.5-2.5-4.7-3.6-6.9-1.8-1.4-3.7-3.2-7.5-5.1 2.6.7 4.5 1.5 6 2.4C37.3 20.5 36.3 17.6 32 10z'/%3E%3C/svg%3E">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #050506;
+            --text-main: #d1d5db;
+            --text-muted: #6b7280;
+            --text-dim: #454a54;
+            --text-bright: #f3f4f6;
+
+            --accent-red: #b8292f;
+            --accent-red-bright: #dc353d;
+            --accent-red-dark: #8f1d24;
+            --accent-red-glow: rgba(184, 41, 47, 0.24);
+            --accent-red-soft: rgba(184, 41, 47, 0.09);
+            --accent-green: #10b981;
+
+            --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            color-scheme: dark;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        ::selection {
+            background: rgba(184, 41, 47, 0.45);
+            color: #ffffff;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Static subtle ambient glow (no distracting moving rain) */
+        .ambient-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(600px circle at 15% 12%, var(--accent-red-soft), transparent 60%),
+                radial-gradient(520px circle at 85% 75%, rgba(143, 29, 36, 0.08), transparent 60%),
+                radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.6) 100%);
+        }
+
+        /* Top Status Bar */
+        .status-bar {
+            width: 100%;
+            min-height: 44px;
+            background: linear-gradient(180deg, rgba(16, 16, 22, 0.72) 0%, rgba(7, 7, 10, 0.62) 100%);
+            backdrop-filter: blur(24px) saturate(170%);
+            -webkit-backdrop-filter: blur(24px) saturate(170%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 8px 28px rgba(0, 0, 0, 0.45);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 max(1.25rem, env(safe-area-inset-left));
+            font-size: 0.78rem;
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            gap: 1rem;
+        }
+
+        .status-left,
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green);
+            flex-shrink: 0;
+        }
+
+        .arch-badge-icon {
+            width: 15px;
+            height: 15px;
+            color: var(--accent-red-bright);
+            flex-shrink: 0;
+        }
+
+        .accent-text {
+            color: var(--accent-red-bright);
+            font-weight: 700;
+        }
+
+        .divider {
+            color: var(--text-dim);
+            user-select: none;
+        }
+
+        .back-link {
+            color: var(--text-bright);
+            text-decoration: none;
+            font-size: 0.74rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            transition: all 0.2s ease;
+        }
+
+        .back-link:hover {
+            border-color: var(--accent-red);
+            background: var(--accent-red-soft);
+            color: #fff;
+        }
+
+        .status-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            padding: 2px 7px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .status-btn.active {
+            color: var(--text-bright);
+            border-color: rgba(184, 41, 47, 0.45);
+        }
+
+        #clock {
+            color: var(--text-bright);
+            font-weight: 500;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Main Container */
+        .container {
+            width: 100%;
+            max-width: 960px;
+            z-index: 5;
+            padding: 2rem 1.25rem 3.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .prompt-line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            padding: 0 0.25rem;
+        }
+
+        .prompt-cmd {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            flex-wrap: wrap;
+        }
+
+        .prompt-user { color: var(--accent-red-bright); font-weight: 600; }
+        .prompt-path { color: var(--text-bright); }
+        .prompt-exec { color: var(--text-main); }
+
+        /* Clear Liquid Glass Card */
+        .card {
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.032) 0%,
+                rgba(10, 11, 15, 0.22) 45%,
+                rgba(8, 8, 12, 0.30) 100%
+            );
+            backdrop-filter: blur(11px) saturate(155%);
+            -webkit-backdrop-filter: blur(11px) saturate(155%);
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            border-radius: 22px;
+            padding: 1.55rem;
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.24),
+                inset 1px 0 0 rgba(255, 255, 255, 0.09),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+                0 18px 44px rgba(0, 0, 0, 0.48),
+                0 0 22px var(--accent-red-soft);
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(
+                500px circle at var(--mouse-x) var(--mouse-y),
+                var(--accent-red-glow),
+                transparent 48%
+            );
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.22);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .card-header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-header .title {
+            color: var(--text-bright);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            text-transform: none;
+            letter-spacing: 0.02em;
+        }
+
+        .card-header .title::before {
+            content: '>';
+            color: var(--accent-red-bright);
+            font-weight: 700;
+        }
+
+        .card-badge {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            padding: 2px 7px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .intro-text {
+            color: var(--text-main);
+            font-size: 0.92rem;
+            line-height: 1.7;
+        }
+
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 1.15rem;
+        }
+
+        .service-card {
+            background: rgba(12, 13, 18, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            border-radius: 16px;
+            padding: 1.35rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 1.1rem;
+            transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-red);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.48), 0 0 18px var(--accent-red-soft);
+        }
+
+        .service-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .service-title {
+            color: var(--text-bright);
+            font-size: 1rem;
+            font-weight: 600;
+            line-height: 1.35;
+        }
+
+        .service-tag {
+            font-size: 0.66rem;
+            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 2px 8px;
+            border-radius: 999px;
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+
+        .service-desc {
+            font-size: 0.84rem;
+            color: var(--text-main);
+            line-height: 1.65;
+            margin-top: 0.6rem;
+        }
+
+        .service-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            margin-top: 0.75rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .service-list li::before {
+            content: '▸ ';
+            color: var(--accent-red-bright);
+        }
+
+        .service-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding-top: 0.9rem;
+            border-top: 1px dashed rgba(255, 255, 255, 0.08);
+        }
+
+        .service-price {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--accent-red-bright);
+        }
+
+        .service-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            text-decoration: none;
+            font-size: 0.76rem;
+            font-weight: 600;
+            color: #fff;
+            background: var(--accent-red-soft);
+            border: 1px solid rgba(184, 41, 47, 0.5);
+            padding: 0.45rem 0.9rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .service-btn:hover {
+            background: var(--accent-red);
+            border-color: var(--accent-red-bright);
+        }
+
+        /* Telegram Contact Banner */
+        .tg-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .tg-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.65rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: #fff;
+            text-decoration: none;
+            padding: 0.8rem 1.25rem;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: all 0.22s ease;
+        }
+
+        .tg-cta:hover {
+            background: var(--accent-red-glow);
+            border-color: var(--accent-red);
+            transform: translateY(-2px);
+        }
+
+        .tg-icon {
+            width: 18px;
+            height: 18px;
+            color: var(--accent-red-bright);
+        }
+
+        .site-footer {
+            width: 100%;
+            max-width: 960px;
+            z-index: 5;
+            padding: 0 1.25rem 2.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            font-size: 0.72rem;
+            color: var(--text-dim);
+        }
+
+        @media (max-width: 650px) {
+            .container {
+                padding: 1rem max(0.75rem, env(safe-area-inset-left)) calc(2.25rem + env(safe-area-inset-bottom));
+                gap: 1.1rem;
+            }
+            .card {
+                padding: 1.1rem;
+                border-radius: 14px;
+            }
+            .services-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+            .status-left .divider,
+            .status-left span:last-child {
+                display: none;
+            }
+            .tg-cta, .service-btn {
+                min-height: 42px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg" aria-hidden="true"></div>
+
+    <!-- Top Status Bar -->
+    <header class="status-bar">
+        <div class="status-left">
+            <span class="status-indicator" title="Available"></span>
+            <svg class="arch-badge-icon" viewBox="0 0 64 64" fill="currentColor" aria-hidden="true">
+                <path d="M32 4c-2.6 6.4-4.2 10.6-7.2 16.9 1.8 1.9 4 4.1 7.6 6.6-3.9-1.6-6.5-3.2-8.4-4.8C20.2 30.5 14.3 42 9.2 52c7.6-4.4 13.6-7.2 19-8.2-.2-1-.3-2.2-.3-3.3v-.2c.1-4.7 2.5-8.3 5.5-8.1 3 .2 5.1 4.2 5 8.9 0 .9-.1 1.7-.3 2.5 5.4 1 11.2 3.8 19 8.4-1.5-2.8-2.8-5.4-4.1-7.9-2-1.6-4.2-3.6-8.5-5.8 3 .8 5.1 1.7 6.8 2.7C38 16 36.9 12.7 32 4z"/>
+            </svg>
+            <span class="accent-text">wasy@arch-system</span>
+            <span class="divider">|</span>
+            <span>~/services</span>
+        </div>
+
+        <div class="status-right">
+            <a href="index.html" class="back-link">← cd ~</a>
+            <button type="button" id="toggle-sfx" class="status-btn active" title="Вкл/Выкл звуки">SFX</button>
+            <span class="divider">|</span>
+            <span id="clock">00:00:00</span>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="prompt-line">
+            <div class="prompt-cmd">
+                <span class="prompt-user">wasy@arch-system</span>
+                <span>:</span>
+                <span class="prompt-path">~/services</span>
+                <span>$</span>
+                <span class="prompt-exec">cat services.md</span>
+            </div>
+        </div>
+
+        <!-- Intro -->
+        <section class="card">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <span class="title">services.md</span>
+                </div>
+                <span class="card-badge">AVAILABLE</span>
+            </div>
+            <p class="intro-text">
+                Чем могу помочь: оплата зарубежных сервисов, учебные задания и тесты, а также настройка личного VPN-сервера под ключ. Все детали обсуждаются лично в Telegram.
+            </p>
+        </section>
+
+        <!-- Services Cards -->
+        <section class="card">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <span class="title">catalog/</span>
+                </div>
+                <span class="card-badge">3 SERVICES</span>
+            </div>
+
+            <div class="services-grid">
+                <!-- Service 1: US Card Payments -->
+                <article class="service-card">
+                    <div>
+                        <div class="service-top">
+                            <h2 class="service-title">Оплата зарубежных подписок (US Card)</h2>
+                            <span class="service-tag">Pay</span>
+                        </div>
+                        <p class="service-desc">
+                            Оплачу любую заграничную подписку, сервис или покупку с американской банковской карты.
+                        </p>
+                        <ul class="service-list">
+                            <li>ChatGPT, Claude, Cursor, Midjourney</li>
+                            <li>Spotify, Steam, хостинги, VPS и домены</li>
+                            <li>Быстрое проведение платежа</li>
+                        </ul>
+                    </div>
+                    <div class="service-footer">
+                        <span class="service-price">Договорная</span>
+                        <a href="https://t.me/Wyyph" target="_blank" rel="noopener noreferrer" class="service-btn">Заказать →</a>
+                    </div>
+                </article>
+
+                <!-- Service 2: Moodle & Projects -->
+                <article class="service-card">
+                    <div>
+                        <div class="service-top">
+                            <h2 class="service-title">Тесты на Moodle &amp; Задания / Проекты</h2>
+                            <span class="service-tag">Code / Edu</span>
+                        </div>
+                        <p class="service-desc">
+                            Выполнение тестов на платформе Moodle, а также разработка и помощь с любыми заданиями и проектами.
+                        </p>
+                        <ul class="service-list">
+                            <li>Тесты Moodle аккуратно и в срок</li>
+                            <li>Лабораторные, курсовые, пет-проекты</li>
+                            <li>Python, C++, C, HTML/JS, Linux</li>
+                        </ul>
+                    </div>
+                    <div class="service-footer">
+                        <span class="service-price">Договорная</span>
+                        <a href="https://t.me/Wyyph" target="_blank" rel="noopener noreferrer" class="service-btn">Заказать →</a>
+                    </div>
+                </article>
+
+                <!-- Service 3: Personal VPN 3X-UI -->
+                <article class="service-card">
+                    <div>
+                        <div class="service-top">
+                            <h2 class="service-title">Личный VPN-сервер (3X-UI + Роутинг)</h2>
+                            <span class="service-tag">Infra</span>
+                        </div>
+                        <p class="service-desc">
+                            Настройка собственного стабильного VPN на вашем VPS с панелью 3X-UI и умной маршрутизацией.
+                        </p>
+                        <ul class="service-list">
+                            <li>VLESS + Reality (защита от ТСПУ)</li>
+                            <li>Маршрутизация: РФ напрямую, остальное в VPN</li>
+                            <li>Помощь с подключением клиентов</li>
+                        </ul>
+                    </div>
+                    <div class="service-footer">
+                        <span class="service-price">350–400 ₽</span>
+                        <a href="https://t.me/Wyyph" target="_blank" rel="noopener noreferrer" class="service-btn">Заказать →</a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <section class="card">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <span class="title">contact.sh</span>
+                </div>
+                <span class="card-badge">TELEGRAM</span>
+            </div>
+            <div class="tg-banner">
+                <div>
+                    <div style="color: var(--text-bright); font-weight: 600; font-size: 0.95rem;">Связаться и обсудить задачу</div>
+                    <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem;">Отвечаю быстрее всего в Telegram</div>
+                </div>
+                <a href="https://t.me/Wyyph" target="_blank" rel="noopener noreferrer" class="tg-cta">
+                    <svg class="tg-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.665 3.717 2.935 10.554c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434Z"/></svg>
+                    <span>Написать @Wyyph ↗</span>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <span>EOF // <strong>wasy@arch-system</strong></span>
+        <span>SERVICES // NO DISTRACTIONS</span>
+    </footer>
+
+    <script>
+        // Clock (UTC+3)
+        const clockEl = document.getElementById('clock');
+        function updateClock() {
+            const now = new Date();
+            const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+            const msk = new Date(utcMs + 3 * 3600000);
+            clockEl.textContent = [msk.getHours(), msk.getMinutes(), msk.getSeconds()]
+                .map(n => String(n).padStart(2, '0')).join(':');
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Sync saved HEX theme if user picked one on main page
+        const themePresets = {
+            '#050506': { accent: '#71717a', bright: '#a1a1aa', dark: '#3f3f46', glow: 'rgba(161, 161, 170, 0.22)', soft: 'rgba(161, 161, 170, 0.08)' },
+            '#1e1e24': { accent: '#6366f1', bright: '#818cf8', dark: '#4338ca', glow: 'rgba(99, 102, 241, 0.26)', soft: 'rgba(99, 102, 241, 0.10)' },
+            '#8f1d24': { accent: '#8f1d24', bright: '#c82d37', dark: '#5e1116', glow: 'rgba(143, 29, 36, 0.28)', soft: 'rgba(143, 29, 36, 0.11)' },
+            '#b8292f': { accent: '#b8292f', bright: '#dc353d', dark: '#8f1d24', glow: 'rgba(184, 41, 47, 0.24)', soft: 'rgba(184, 41, 47, 0.09)' },
+            '#4b5563': { accent: '#64748b', bright: '#94a3b8', dark: '#475569', glow: 'rgba(100, 116, 139, 0.24)', soft: 'rgba(100, 116, 139, 0.09)' },
+            '#9ca3af': { accent: '#9ca3af', bright: '#d1d5db', dark: '#6b7280', glow: 'rgba(156, 163, 175, 0.22)', soft: 'rgba(156, 163, 175, 0.08)' },
+            '#e5e7eb': { accent: '#e5e7eb', bright: '#ffffff', dark: '#9ca3af', glow: 'rgba(229, 231, 235, 0.22)', soft: 'rgba(229, 231, 235, 0.08)' }
+        };
+        try {
+            const saved = localStorage.getItem('wasy-theme-hex');
+            if (saved && themePresets[saved]) {
+                const p = themePresets[saved];
+                const r = document.documentElement.style;
+                r.setProperty('--accent-red', p.accent);
+                r.setProperty('--accent-red-bright', p.bright);
+                r.setProperty('--accent-red-dark', p.dark);
+                r.setProperty('--accent-red-glow', p.glow);
+                r.setProperty('--accent-red-soft', p.soft);
+            }
+        } catch (_) {}
+
+        // Card spotlight
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+                card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+            });
+        });
+
+        // Subtle SFX
+        let sfxEnabled = true;
+        let audioCtx = null;
+        function playTick() {
+            if (!sfxEnabled) return;
+            const Ctx = window.AudioContext || window.webkitAudioContext;
+            if (!Ctx) return;
+            if (!audioCtx) audioCtx = new Ctx();
+            if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(640, now);
+            osc.frequency.exponentialRampToValueAtTime(420, now + 0.032);
+            gain.gain.setValueAtTime(0.035, now);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.032);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.032);
+        }
+
+        const sfxBtn = document.getElementById('toggle-sfx');
+        sfxBtn?.addEventListener('click', () => {
+            sfxEnabled = !sfxEnabled;
+            sfxBtn.classList.toggle('active', sfxEnabled);
+            if (sfxEnabled) playTick();
+        });
+
+        document.addEventListener('click', e => {
+            if (e.target.closest('a, button') && e.target.id !== 'toggle-sfx') playTick();
+        });
+    </script>
+</body>
+</html>

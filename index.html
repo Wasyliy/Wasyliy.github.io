@@ -1642,6 +1642,7 @@
             <a href="#activity" class="ws-link" data-section="activity">06:LOG</a>
             <a href="#tools" class="ws-link" data-section="tools">07:TOOLS</a>
             <a href="#notes" class="ws-link" data-section="notes">08:LAB</a>
+            <a href="services.html" class="ws-link" style="color: var(--accent-red-bright); border-color: rgba(184, 41, 47, 0.35);">09:SERVICES ↗</a>
         </nav>
 
         <div class="status-right">
@@ -3146,6 +3147,7 @@ Steam    → <a href="https://steamcommunity.com/id/fakelekser/" target="_blank"
                 { label: '06:LOG — journalctl.log', tag: 'Section', run: () => document.getElementById('activity').scrollIntoView({ behavior: 'smooth' }) },
                 { label: '07:TOOLS — toolbox.sh', tag: 'Section', run: () => document.getElementById('tools').scrollIntoView({ behavior: 'smooth' }) },
                 { label: '08:LAB — notes.md', tag: 'Section', run: () => document.getElementById('notes').scrollIntoView({ behavior: 'smooth' }) },
+                { label: '09:SERVICES — Услуги и прайс', tag: 'Page', run: () => { window.location.href = 'services.html'; } },
                 { label: 'Theme: Crimson (#b8292f)', tag: 'Theme', run: () => { applyTheme('#b8292f', true); sfx.chime(); } },
                 { label: 'Theme: Midnight Indigo (#1e1e24)', tag: 'Theme', run: () => { applyTheme('#1e1e24', true); sfx.chime(); } },
                 { label: 'Theme: Ice Platinum (#e5e7eb)', tag: 'Theme', run: () => { applyTheme('#e5e7eb', true); sfx.chime(); } },
