@@ -2051,6 +2051,9 @@
                     </div>
                 </a>
             </div>
+            <div id="repos-more-wrap" style="display: none; justify-content: center; margin-top: 1.25rem;">
+                <button type="button" class="services-banner-btn" id="repos-show-more" style="margin-top: 0;">show more</button>
+            </div>
         </section>
 
         <!-- 04. Contacts -->
@@ -2563,29 +2566,38 @@ journalctl --vacuum-time=7d</div>
         });
 
         // ==========================================
-        // 6. REPOSITORY FILTERING & LIVE GITHUB SYNC
+        // 6. REPOSITORY FILTERING, 12H SYNC, STAR SORT & SHOW MORE
         // ==========================================
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        const projectCards = document.querySelectorAll('.project-card');
+        const REPOS_CACHE_KEY = 'wasy-repos-cache-v2';
+        const REPOS_CACHE_TTL = 12 * 60 * 60 * 1000; // 12 hours
+        const INITIAL_REPOS_LIMIT = 4;
 
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                filterBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                const filter = btn.dataset.filter;
+        const projectsGrid = document.getElementById('projects-grid');
+        const filterBtns = document.querySelectorAll('#repos .filter-btn[data-filter]');
+        const moreWrap = document.getElementById('repos-more-wrap');
+        const moreBtn = document.getElementById('repos-show-more');
+        const allFilterBtn = document.querySelector('#repos .filter-btn[data-filter="all"]');
 
-                projectCards.forEach(card => {
-                    const cat = card.dataset.category;
-                    if (filter === 'all') {
-                        card.classList.remove('hidden');
-                    } else if (cat === filter) {
-                        card.classList.remove('hidden');
-                    } else {
-                        card.classList.add('hidden');
-                    }
-                });
-            });
-        });
+        let currentFilter = 'all';
+        let showAllRepos = false;
+        let loadedRepos = null;
+
+        const langColors = {
+            Python: '#3572A5',
+            'C++': '#f34b7d',
+            C: '#7c8594',
+            HTML: '#e34c26',
+            JavaScript: '#f1e05a',
+            TypeScript: '#3178c6',
+            CSS: '#563d7c',
+            Shell: '#89e051'
+        };
+
+        function escapeHtml(str) {
+            return String(str || '').replace(/[&<>"']/g, ch => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[ch]));
+        }
 
         function formatRelativeTime(isoDate) {
             const diffDays = Math.floor((Date.now() - new Date(isoDate).getTime()) / 86400000);
@@ -2597,38 +2609,133 @@ journalctl --vacuum-time=7d</div>
             return 'Updated ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         }
 
+        function classifyRepo(repo) {
+            const text = `${repo.name} ${repo.description || ''} ${(repo.topics || []).join(' ')}`.toLowerCase();
+            if (/bypass|proxy|vpn|3x-ui|nginx|vps|register/.test(text)) return 'network';
+            if (repo.language === 'C' || repo.language === 'C++' || /esp32|embed|flipper|subghz/.test(text)) return 'embedded';
+            if (repo.language === 'Python') return 'python';
+            if (repo.language === 'HTML' || repo.language === 'JavaScript' || repo.language === 'TypeScript' || /rpc|github\.io/.test(text)) return 'web';
+            return 'other';
+        }
+
+        function renderRepos() {
+            if (!loadedRepos) {
+                const cards = projectsGrid.querySelectorAll('.project-card');
+                cards.forEach(card => {
+                    const cat = card.dataset.category;
+                    const match = currentFilter === 'all' || cat === currentFilter;
+                    card.classList.toggle('hidden', !match);
+                });
+                if (moreWrap) moreWrap.style.display = 'none';
+                return;
+            }
+
+            const filtered = loadedRepos.filter(r => currentFilter === 'all' || r._cat === currentFilter);
+            const visible = (currentFilter === 'all' && !showAllRepos)
+                ? filtered.slice(0, INITIAL_REPOS_LIMIT)
+                : filtered;
+
+            projectsGrid.innerHTML = visible.map(r => {
+                const lang = r.language || 'Text';
+                const dotColor = langColors[lang] || '#b8292f';
+                const starsHtml = r.stargazers_count > 0 ? `<span class="star-count">★ ${r.stargazers_count}</span>` : '';
+                const badge = r.fork ? 'Fork' : (r.license && r.license.spdx_id && r.license.spdx_id !== 'NOASSERTION' ? r.license.spdx_id : 'Public');
+                const desc = r.description ? escapeHtml(r.description) : 'No description provided.';
+                const tags = (r.topics && r.topics.length)
+                    ? r.topics.slice(0, 3)
+                    : [lang, r._cat !== 'other' ? r._cat.toUpperCase() : 'GitHub'];
+
+                return `
+                    <a href="${escapeHtml(r.html_url)}" target="_blank" rel="noopener noreferrer"
+                       class="project-card" data-repo="${escapeHtml(r.name)}" data-category="${r._cat}">
+                        <div>
+                            <div class="project-top">
+                                <div class="project-title-wrap">
+                                    <svg class="repo-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8Z"/></svg>
+                                    <div class="project-title">${escapeHtml(r.name)}</div>
+                                </div>
+                                <span class="repo-badge">${escapeHtml(badge)}</span>
+                            </div>
+                            <div class="project-desc">${desc}</div>
+                        </div>
+                        <div class="project-footer">
+                            <div class="project-meta">
+                                <span class="meta-left">
+                                    <span><span class="lang-dot" style="background:${dotColor}"></span>${escapeHtml(lang)}</span>
+                                    ${starsHtml}
+                                </span>
+                                <span>${formatRelativeTime(r.pushed_at)}</span>
+                            </div>
+                            <div class="tags">
+                                ${tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}
+                            </div>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+
+            if (currentFilter === 'all' && filtered.length > INITIAL_REPOS_LIMIT) {
+                moreWrap.style.display = 'flex';
+                const remaining = filtered.length - INITIAL_REPOS_LIMIT;
+                moreBtn.textContent = showAllRepos ? 'show less ↑' : `show more (+${remaining} repos) ↓`;
+            } else {
+                moreWrap.style.display = 'none';
+            }
+        }
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                renderRepos();
+            });
+        });
+
+        moreBtn?.addEventListener('click', () => {
+            showAllRepos = !showAllRepos;
+            sfx.exec();
+            renderRepos();
+        });
+
         async function syncGitHubStats() {
             const syncDot = document.getElementById('sync-dot');
             const syncText = document.getElementById('sync-text');
+
+            const applyRepos = (repos, sourceLabel) => {
+                loadedRepos = repos
+                    .slice()
+                    .sort((a, b) => (b.stargazers_count - a.stargazers_count) || (new Date(b.pushed_at) - new Date(a.pushed_at)))
+                    .map(r => ({ ...r, _cat: classifyRepo(r) }));
+
+                if (allFilterBtn) allFilterBtn.textContent = `ALL [${loadedRepos.length}]`;
+                syncDot.classList.add('live');
+                syncText.textContent = sourceLabel;
+                renderRepos();
+            };
+
             try {
-                const res = await fetch('https://api.github.com/users/Wasyliy/repos?per_page=30');
-                if (!res.ok) return;
-                const repos = await res.json();
-                const repoMap = new Map(repos.map(r => [r.name.toLowerCase(), r]));
-
-                let updatedCount = 0;
-                projectCards.forEach(card => {
-                    const name = card.dataset.repo;
-                    if (!name) return;
-                    const data = repoMap.get(name.toLowerCase());
-                    if (!data) return;
-
-                    const starsEl = card.querySelector('[data-stars]');
-                    const updatedEl = card.querySelector('[data-updated]');
-
-                    if (starsEl) {
-                        starsEl.textContent = data.stargazers_count > 0 ? `★ ${data.stargazers_count}` : '';
+                const rawCache = localStorage.getItem(REPOS_CACHE_KEY);
+                if (rawCache) {
+                    const parsed = JSON.parse(rawCache);
+                    if (parsed && Array.isArray(parsed.repos) && (Date.now() - parsed.ts < REPOS_CACHE_TTL)) {
+                        applyRepos(parsed.repos, 'github synced (12h)');
+                        return;
                     }
-                    if (updatedEl && data.pushed_at) {
-                        updatedEl.textContent = formatRelativeTime(data.pushed_at);
-                    }
-                    updatedCount++;
-                });
-
-                if (updatedCount > 0) {
-                    syncDot.classList.add('live');
-                    syncText.textContent = 'github live';
                 }
+            } catch (_) {}
+
+            try {
+                const res = await fetch('https://api.github.com/users/Wasyliy/repos?per_page=100&type=owner&sort=updated');
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const repos = await res.json();
+                if (!Array.isArray(repos) || !repos.length) throw new Error('empty');
+
+                try {
+                    localStorage.setItem(REPOS_CACHE_KEY, JSON.stringify({ ts: Date.now(), repos }));
+                } catch (_) {}
+
+                applyRepos(repos, 'github live (12h)');
             } catch (_) {
                 // Keep static fallback silently
             }
