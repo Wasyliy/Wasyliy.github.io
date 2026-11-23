@@ -375,28 +375,27 @@
             color: var(--text-bright);
         }
 
-        /* Card Component with Apple-style Liquid Glass & Mouse Spotlight */
+        /* Card Component with Clear Liquid Glass & Mouse Spotlight */
         .card {
             --mouse-x: 50%;
             --mouse-y: 50%;
             background: linear-gradient(
                 135deg,
-                rgba(255, 255, 255, 0.095) 0%,
-                rgba(255, 255, 255, 0.025) 45%,
-                rgba(10, 10, 14, 0.32) 100%
+                rgba(255, 255, 255, 0.032) 0%,
+                rgba(10, 11, 15, 0.20) 45%,
+                rgba(8, 8, 12, 0.28) 100%
             );
-            backdrop-filter: blur(22px) saturate(190%) brightness(1.06);
-            -webkit-backdrop-filter: blur(22px) saturate(190%) brightness(1.06);
-            border: 1px solid rgba(255, 255, 255, 0.22);
+            backdrop-filter: blur(11px) saturate(155%);
+            -webkit-backdrop-filter: blur(11px) saturate(155%);
+            border: 1px solid rgba(255, 255, 255, 0.13);
             border-radius: 22px;
             padding: 1.55rem;
             box-shadow:
-                inset 0 1.5px 1px rgba(255, 255, 255, 0.42),
-                inset 1.5px 0 1px rgba(255, 255, 255, 0.18),
-                inset 0 -2px 8px rgba(255, 255, 255, 0.08),
-                inset 0 0 24px rgba(255, 255, 255, 0.03),
-                0 20px 50px rgba(0, 0, 0, 0.55),
-                0 0 26px var(--accent-red-soft);
+                inset 0 1px 0 rgba(255, 255, 255, 0.24),
+                inset 1px 0 0 rgba(255, 255, 255, 0.09),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+                0 18px 44px rgba(0, 0, 0, 0.48),
+                0 0 22px var(--accent-red-soft);
             transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -441,25 +440,25 @@
             position: absolute;
             inset: 0;
             background: linear-gradient(
-                125deg,
-                rgba(255, 255, 255, 0.12) 0%,
-                rgba(255, 255, 255, 0.02) 30%,
-                transparent 60%,
-                rgba(255, 255, 255, 0.06) 100%
+                130deg,
+                rgba(255, 255, 255, 0.045) 0%,
+                rgba(255, 255, 255, 0.01) 24%,
+                transparent 55%,
+                rgba(255, 255, 255, 0.025) 100%
             );
-            opacity: 0.75;
+            opacity: 0.7;
             transition: opacity 0.35s ease;
             pointer-events: none;
         }
 
         .card:hover {
-            border-color: rgba(255, 255, 255, 0.34);
+            border-color: rgba(255, 255, 255, 0.22);
             box-shadow:
-                inset 0 1.5px 1px rgba(255, 255, 255, 0.5),
-                inset 1.5px 0 1px rgba(255, 255, 255, 0.22),
-                inset 0 -2px 8px rgba(255, 255, 255, 0.10),
-                0 24px 56px rgba(0, 0, 0, 0.6),
-                0 0 28px var(--accent-red-glow);
+                inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                inset 1px 0 0 rgba(255, 255, 255, 0.12),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+                0 22px 52px rgba(0, 0, 0, 0.58),
+                0 0 24px var(--accent-red-glow);
         }
 
         .card:hover::before,
@@ -1347,7 +1346,8 @@
         </nav>
 
         <div class="status-right">
-            <button type="button" id="toggle-rain" class="status-btn active" title="Вкл/Выкл цифровой дождь">FX</button>
+            <button type="button" id="toggle-sfx" class="status-btn active" title="Вкл/Выкл звуки интерфейса">SFX</button>
+            <button type="button" id="toggle-rain" class="status-btn active" title="Вкл/Выкл анимированный фон">FX</button>
             <button type="button" id="toggle-crt" class="status-btn active" title="Вкл/Выкл CRT-сканлайны">CRT</button>
             <span class="divider">|</span>
             <span id="uptime" title="Session Uptime">UP 00:00</span>
@@ -1838,6 +1838,75 @@
         updateTimers();
 
         // ==========================================
+        // 1B. TACTILE WEB AUDIO SFX ENGINE
+        // ==========================================
+        let sfxEnabled = true;
+        let audioCtx = null;
+
+        function getAudioCtx() {
+            if (!sfxEnabled) return null;
+            if (!audioCtx) {
+                const Ctx = window.AudioContext || window.webkitAudioContext;
+                if (Ctx) audioCtx = new Ctx();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume().catch(() => {});
+            }
+            return audioCtx;
+        }
+
+        function playTone(freq, duration = 0.045, type = 'sine', vol = 0.04, slideTo = null) {
+            const ctx = getAudioCtx();
+            if (!ctx) return;
+            const now = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, now);
+            if (slideTo) {
+                osc.frequency.exponentialRampToValueAtTime(slideTo, now + duration);
+            }
+            gain.gain.setValueAtTime(vol, now);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + duration);
+        }
+
+        const sfx = {
+            tick() { playTone(640, 0.032, 'triangle', 0.035, 420); },
+            key() { playTone(480 + Math.random() * 140, 0.02, 'square', 0.015, 320); },
+            chime() {
+                playTone(523.25, 0.09, 'sine', 0.04);
+                setTimeout(() => playTone(783.99, 0.14, 'sine', 0.035), 45);
+            },
+            purr() {
+                playTone(220, 0.09, 'sine', 0.035, 310);
+                setTimeout(() => playTone(310, 0.11, 'sine', 0.03, 440), 75);
+            },
+            exec() { playTone(760, 0.05, 'triangle', 0.035, 980); },
+            err() { playTone(190, 0.12, 'sawtooth', 0.03, 130); }
+        };
+
+        const toggleSfxBtn = document.getElementById('toggle-sfx');
+        if (toggleSfxBtn) {
+            toggleSfxBtn.addEventListener('click', () => {
+                sfxEnabled = !sfxEnabled;
+                toggleSfxBtn.classList.toggle('active', sfxEnabled);
+                if (sfxEnabled) sfx.chime();
+                showToast(`UI Sounds: ${sfxEnabled ? 'ON' : 'OFF'}`);
+            });
+        }
+
+        document.addEventListener('click', e => {
+            const target = e.target.closest('a, button');
+            if (!target) return;
+            if (target.id === 'toggle-sfx' || target.id === 'ascii-cat' || target.classList.contains('color-box')) return;
+            sfx.tick();
+        });
+
+        // ==========================================
         // 2. TOAST NOTIFICATION
         // ==========================================
         const toastEl = document.getElementById('toast');
@@ -1891,6 +1960,7 @@
             catIndex = (catIndex + 1) % catStates.length;
             asciiArtText.textContent = catStates[catIndex].art;
             asciiStatus.textContent = catStates[catIndex].status;
+            sfx.purr();
         });
 
         // ==========================================
@@ -2005,6 +2075,7 @@
             box.addEventListener('click', () => {
                 const hex = box.dataset.hex;
                 const preset = applyTheme(hex, true);
+                sfx.chime();
                 if (navigator.clipboard) {
                     navigator.clipboard.writeText(hex).then(() => {
                         showToast(`Theme: ${preset.name} (${hex} copied)`);
@@ -2264,8 +2335,11 @@ Steam    → <a href="https://steamcommunity.com/id/fakelekser/" target="_blank"
                     break;
 
                 default:
+                    sfx.err();
                     appendTermLine(`zsh: command not found: ${cmd}. Type 'help' for commands.`, 'accent');
             }
+            if (cmd !== 'help' && cmd !== 'whoami' && cmd !== 'neofetch' && cmd !== 'sysinfo' && cmd !== 'ls' && cmd !== 'cat' && cmd !== 'stack' && cmd !== 'skills' && cmd !== 'contact' && cmd !== 'contacts' && cmd !== 'ping' && cmd !== 'date' && cmd !== 'matrix' && cmd !== 'crt' && cmd !== 'sudo' && cmd !== 'clear') return;
+            sfx.exec();
         }
 
         termWindow.addEventListener('click', e => {
@@ -2275,6 +2349,9 @@ Steam    → <a href="https://steamcommunity.com/id/fakelekser/" target="_blank"
         });
 
         termInput.addEventListener('keydown', e => {
+            if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+                sfx.key();
+            }
             if (e.key === 'Enter') {
                 runCommand(termInput.value);
                 termInput.value = '';
@@ -2319,7 +2396,7 @@ Steam    → <a href="https://steamcommunity.com/id/fakelekser/" target="_blank"
         });
 
         // ==========================================
-        // 10. ANIMATED DIGITAL RAIN CANVAS (OPTIMIZED)
+        // 10. DYNAMIC NETWORK MESH + DIGITAL RAIN CANVAS
         // ==========================================
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
@@ -2329,6 +2406,7 @@ Steam    → <a href="https://steamcommunity.com/id/fakelekser/" target="_blank"
         let width = 0;
         let height = 0;
         let columns = [];
+        let nodes = [];
         let mouseX = -9999;
         let mouseY = -9999;
 
@@ -2340,13 +2418,31 @@ Steam    → <a href="https://steamcommunity.com/id/fakelekser/" target="_blank"
         function resizeCanvas() {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
-            const columnCount = Math.floor(width / fontSize);
+
+            // Rain columns (sparse & clean with glowing heads)
+            const columnCount = Math.floor(width / (fontSize * 1.45));
             columns = [];
             for (let i = 0; i < columnCount; i++) {
                 columns.push({
-                    x: i * fontSize,
-                    y: Math.random() * -height,
-                    speed: 0.75 + Math.random() * 1.6
+                    x: i * fontSize * 1.45,
+                    y: Math.random() * height,
+                    speed: 0.7 + Math.random() * 1.5,
+                    len: 6 + Math.floor(Math.random() * 12),
+                    seed: Math.floor(Math.random() * chars.length)
+                });
+            }
+
+            // Drifting network constellation nodes
+            const nodeCount = Math.min(48, Math.max(18, Math.floor((width * height) / 36000)));
+            nodes = [];
+            for (let i = 0; i < nodeCount; i++) {
+                nodes.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    vx: (Math.random() - 0.5) * 0.45,
+                    vy: (Math.random() - 0.5) * 0.45,
+                    r: 1.4 + Math.random() * 1.6,
+                    accent: Math.random() > 0.72
                 });
             }
         }
@@ -2358,41 +2454,77 @@ Steam    → <a href="https://steamcommunity.com/id/fakelekser/" target="_blank"
             requestAnimationFrame(drawMatrix);
             if (!rainEnabled) return;
 
-            // Cap to ~30fps for crisp classic terminal rain & low CPU
             if (timestamp - lastFrame < 33) return;
             lastFrame = timestamp;
 
-            ctx.fillStyle = 'rgba(5, 5, 6, 0.14)';
+            // Clear with subtle fade so trails stay crisp without muddying the mesh
+            ctx.fillStyle = 'rgba(5, 5, 6, 0.34)';
             ctx.fillRect(0, 0, width, height);
-            ctx.font = `${fontSize}px 'JetBrains Mono', monospace`;
 
+            // 1. Draw subtle network constellation mesh
+            const maxDist = 145;
+            for (let i = 0; i < nodes.length; i++) {
+                const a = nodes[i];
+                a.x += a.vx;
+                a.y += a.vy;
+                if (a.x < 0 || a.x > width) a.vx *= -1;
+                if (a.y < 0 || a.y > height) a.vy *= -1;
+
+                // Soft mouse repulsion/attraction feel
+                const mdx = mouseX - a.x;
+                const mdy = mouseY - a.y;
+                const mDist = Math.hypot(mdx, mdy);
+                if (mDist < 170 && mDist > 1) {
+                    a.x += (mdx / mDist) * 0.35;
+                    a.y += (mdy / mDist) * 0.35;
+                }
+
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const b = nodes[j];
+                    const dx = a.x - b.x;
+                    const dy = a.y - b.y;
+                    const dist = Math.hypot(dx, dy);
+                    if (dist < maxDist) {
+                        const alpha = (1 - dist / maxDist) * 0.18;
+                        ctx.strokeStyle = (a.accent || b.accent)
+                            ? `rgba(255, 255, 255, ${alpha * 1.1})`
+                            : `rgba(140, 150, 165, ${alpha})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.beginPath();
+                        ctx.moveTo(a.x, a.y);
+                        ctx.lineTo(b.x, b.y);
+                        ctx.stroke();
+                    }
+                }
+
+                ctx.beginPath();
+                ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+                ctx.fillStyle = a.accent ? rainPalette.bright : 'rgba(156, 163, 175, 0.38)';
+                ctx.fill();
+            }
+
+            // 2. Draw digital rain streaks with bright heads
+            ctx.font = `${fontSize}px 'JetBrains Mono', monospace`;
             for (let i = 0; i < columns.length; i++) {
                 const col = columns[i];
                 const char = chars[Math.floor(Math.random() * chars.length)];
-
                 const dx = col.x - mouseX;
                 const dy = col.y - mouseY;
-                const nearMouse = (dx * dx + dy * dy) < 16000;
+                const nearMouse = (dx * dx + dy * dy) < 20000;
 
-                const rand = Math.random();
-                if (nearMouse) {
-                    ctx.fillStyle = rainPalette.bright;
-                } else if (rand > 0.965) {
-                    ctx.fillStyle = rainPalette.mid;
-                } else if (rand > 0.90) {
-                    ctx.fillStyle = rainPalette.dark;
-                } else if (rand > 0.62) {
-                    ctx.fillStyle = '#42464f';
-                } else {
-                    ctx.fillStyle = '#1b1d22';
-                }
-
+                // Glowing head glyph
+                ctx.fillStyle = nearMouse ? '#ffffff' : rainPalette.bright;
                 ctx.fillText(char, col.x, col.y);
 
-                if (col.y > height && Math.random() > 0.975) {
-                    col.y = 0;
+                // Fading tail glyph slightly above
+                const tailChar = chars[(col.seed + Math.floor(col.y / fontSize)) % chars.length];
+                ctx.fillStyle = nearMouse ? rainPalette.mid : 'rgba(90, 96, 108, 0.42)';
+                ctx.fillText(tailChar, col.x, col.y - fontSize * 1.2);
+
+                if (col.y > height + 40 && Math.random() > 0.96) {
+                    col.y = -20;
                 }
-                col.y += col.speed * fontSize * 0.48;
+                col.y += col.speed * fontSize * 0.44;
             }
         }
         requestAnimationFrame(drawMatrix);
