@@ -1298,6 +1298,280 @@
             }
         }
 
+        /* ==========================================
+           NEW MODULES: LOG, TOOLS, LAB, SCOPE, CMD-K
+           ========================================== */
+        .journal-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            font-size: 0.78rem;
+            background: rgba(5, 5, 8, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 12px;
+            padding: 0.9rem 1rem;
+            max-height: 240px;
+            overflow-y: auto;
+        }
+
+        .journal-row {
+            display: grid;
+            grid-template-columns: 74px 72px 1fr;
+            gap: 0.65rem;
+            align-items: baseline;
+            padding: 0.25rem 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+        }
+
+        .journal-row:last-child { border-bottom: none; }
+        .journal-time { color: var(--text-dim); font-variant-numeric: tabular-nums; }
+        .journal-unit { color: var(--accent-red-bright); font-weight: 600; }
+        .journal-msg { color: var(--text-main); word-break: break-word; }
+        .journal-msg a { color: var(--text-bright); text-decoration: none; border-bottom: 1px dotted rgba(255,255,255,0.25); }
+        .journal-msg a:hover { color: #fff; border-bottom-color: var(--accent-red-bright); }
+
+        /* Toolbox Tabs & Panels */
+        .tool-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            margin-bottom: 1rem;
+        }
+
+        .tool-panel { display: none; flex-direction: column; gap: 0.85rem; }
+        .tool-panel.active { display: flex; }
+
+        .tool-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .glass-input, .glass-textarea {
+            width: 100%;
+            background: rgba(5, 6, 9, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            border-radius: 8px;
+            padding: 0.65rem 0.8rem;
+            color: var(--text-bright);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .glass-textarea {
+            min-height: 78px;
+            resize: vertical;
+        }
+
+        .glass-input:focus, .glass-textarea:focus {
+            border-color: var(--accent-red-bright);
+            box-shadow: 0 0 0 2px var(--accent-red-soft);
+        }
+
+        .tool-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            align-items: center;
+        }
+
+        .cidr-output {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 0.5rem;
+            background: rgba(5, 5, 8, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 10px;
+            padding: 0.75rem;
+            font-size: 0.76rem;
+        }
+
+        .cidr-cell span:first-child { color: var(--text-muted); display: block; font-size: 0.68rem; }
+        .cidr-cell span:last-child { color: var(--text-bright); font-weight: 600; }
+
+        /* Notes / Lab Cheat-Sheets */
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 0.85rem;
+        }
+
+        .note-card {
+            background: rgba(8, 9, 13, 0.48);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 12px;
+            padding: 0.95rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .note-card:hover {
+            border-color: var(--accent-red);
+            transform: translateY(-2px);
+        }
+
+        .note-title {
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: var(--text-bright);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .note-code {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 6px;
+            padding: 0.5rem 0.65rem;
+            font-size: 0.72rem;
+            color: var(--text-main);
+            overflow-x: auto;
+            white-space: pre;
+            cursor: pointer;
+        }
+
+        .note-code:hover {
+            border-color: var(--accent-red);
+            color: #fff;
+        }
+
+        /* Sub-GHz Live Scope */
+        .scope-controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .scope-canvas-wrap {
+            position: relative;
+            background: rgba(3, 4, 6, 0.72);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 12px;
+            overflow: hidden;
+            height: 128px;
+        }
+
+        #scope-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .scope-hud {
+            position: absolute;
+            top: 8px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .scope-rssi {
+            color: var(--accent-red-bright);
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Ctrl+K Liquid Glass Command Palette */
+        .cmd-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 2, 4, 0.65);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 80;
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 12vh 1rem 1rem;
+        }
+
+        .cmd-backdrop.open { display: flex; }
+
+        .cmd-palette {
+            width: 100%;
+            max-width: 540px;
+            background: linear-gradient(145deg, rgba(22, 23, 30, 0.82), rgba(8, 9, 13, 0.88));
+            backdrop-filter: blur(26px) saturate(180%);
+            -webkit-backdrop-filter: blur(26px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 18px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 28px 70px rgba(0, 0, 0, 0.75);
+            overflow: hidden;
+        }
+
+        .cmd-search-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .cmd-search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-bright);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+        }
+
+        .cmd-results {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 0.45rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .cmd-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.55rem 0.75rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: var(--text-main);
+            border: 1px solid transparent;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            font-family: var(--font-mono);
+        }
+
+        .cmd-item:hover, .cmd-item.selected {
+            background: var(--accent-red-soft);
+            border-color: rgba(255, 255, 255, 0.12);
+            color: #fff;
+        }
+
+        .cmd-item-tag {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 650px) {
+            .tool-grid-2 { grid-template-columns: 1fr; }
+            .journal-row { grid-template-columns: 62px 1fr; }
+            .journal-unit { display: none; }
+            .glass-input, .glass-textarea, .cmd-search-input { font-size: 16px; }
+        }
+
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
                 animation-duration: 0.01ms !important;
@@ -1341,11 +1615,16 @@
             <a href="#sysinfo" class="ws-link active" data-section="sysinfo">01:SYS</a>
             <a href="#about" class="ws-link" data-section="about">02:ABOUT</a>
             <a href="#repos" class="ws-link" data-section="repos">03:REPOS</a>
-            <a href="#terminal" class="ws-link" data-section="terminal">04:TERM</a>
-            <a href="#contacts" class="ws-link" data-section="contacts">05:NET</a>
+            <a href="#activity" class="ws-link" data-section="activity">04:LOG</a>
+            <a href="#tools" class="ws-link" data-section="tools">05:TOOLS</a>
+            <a href="#notes" class="ws-link" data-section="notes">06:LAB</a>
+            <a href="#scope" class="ws-link" data-section="scope">07:RF</a>
+            <a href="#terminal" class="ws-link" data-section="terminal">08:TERM</a>
+            <a href="#contacts" class="ws-link" data-section="contacts">09:NET</a>
         </nav>
 
         <div class="status-right">
+            <button type="button" id="open-cmd" class="status-btn" title="Палитра команд (Ctrl+K)">⌘K</button>
             <button type="button" id="toggle-sfx" class="status-btn active" title="Вкл/Выкл звуки интерфейса">SFX</button>
             <button type="button" id="toggle-rain" class="status-btn active" title="Вкл/Выкл анимированный фон">FX</button>
             <button type="button" id="toggle-crt" class="status-btn active" title="Вкл/Выкл CRT-сканлайны">CRT</button>
@@ -1701,7 +1980,140 @@
             </div>
         </section>
 
-        <!-- 04. Interactive Terminal -->
+        <!-- 04. Live Activity Log (journalctl) -->
+        <section class="card" id="activity">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <span class="title">journalctl.log</span>
+                    <span class="file-perm">-r--r--r--</span>
+                </div>
+                <span class="card-badge" id="journal-badge">LIVE STREAM</span>
+            </div>
+            <div class="journal-list" id="journal-list">
+                <div class="journal-row">
+                    <span class="journal-time">--:--</span>
+                    <span class="journal-unit">github</span>
+                    <span class="journal-msg">Fetching public events for Wasyliy...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 05. Pocket Toolbox -->
+        <section class="card" id="tools">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <span class="title">toolbox.sh</span>
+                    <span class="file-perm">-rwxr-xr-x</span>
+                </div>
+                <span class="card-badge">LOCAL UTILS</span>
+            </div>
+
+            <div class="tool-tabs" role="tablist">
+                <button type="button" class="filter-btn active" data-tool="codec">BASE64 / HEX / URL</button>
+                <button type="button" class="filter-btn" data-tool="keygen">PASS / UUID</button>
+                <button type="button" class="filter-btn" data-tool="cidr">IPv4 CIDR</button>
+            </div>
+
+            <!-- Codec Panel -->
+            <div class="tool-panel active" id="tool-codec">
+                <div class="tool-grid-2">
+                    <textarea id="codec-in" class="glass-textarea" placeholder="Input text, Base64, or Hex..."></textarea>
+                    <textarea id="codec-out" class="glass-textarea" readonly placeholder="Output..."></textarea>
+                </div>
+                <div class="tool-actions">
+                    <button type="button" class="quick-cmd" data-codec="b64-enc">b64 encode</button>
+                    <button type="button" class="quick-cmd" data-codec="b64-dec">b64 decode</button>
+                    <button type="button" class="quick-cmd" data-codec="hex-enc">to hex</button>
+                    <button type="button" class="quick-cmd" data-codec="url-enc">url encode</button>
+                    <button type="button" class="quick-cmd" id="codec-copy">copy out</button>
+                </div>
+            </div>
+
+            <!-- Keygen Panel -->
+            <div class="tool-panel" id="tool-keygen">
+                <div class="tool-actions">
+                    <input type="text" id="keygen-out" class="glass-input" readonly value="Click generate..." style="flex:1; min-width: 200px;">
+                    <button type="button" class="quick-cmd" id="gen-pass">24-char Pass</button>
+                    <button type="button" class="quick-cmd" id="gen-uuid">UUID v4</button>
+                    <button type="button" class="quick-cmd" id="gen-copy">copy</button>
+                </div>
+            </div>
+
+            <!-- CIDR Panel -->
+            <div class="tool-panel" id="tool-cidr">
+                <div class="tool-actions">
+                    <input type="text" id="cidr-in" class="glass-input" value="192.168.1.10/24" placeholder="e.g. 10.0.0.1/24" style="flex:1; min-width: 180px;">
+                    <button type="button" class="quick-cmd" id="cidr-calc">calculate</button>
+                </div>
+                <div class="cidr-output" id="cidr-out">
+                    <div class="cidr-cell"><span>Network</span><span>192.168.1.0</span></div>
+                    <div class="cidr-cell"><span>Broadcast</span><span>192.168.1.255</span></div>
+                    <div class="cidr-cell"><span>Netmask</span><span>255.255.255.0</span></div>
+                    <div class="cidr-cell"><span>Usable Hosts</span><span>254</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 06. Lab Notes / Mini-Guides -->
+        <section class="card" id="notes">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <span class="title">notes.md</span>
+                    <span class="file-perm">-rw-r--r--</span>
+                </div>
+                <span class="card-badge">SNIPPETS</span>
+            </div>
+            <div class="notes-grid">
+                <div class="note-card">
+                    <div class="note-title"><span>3X-UI / Nginx Check</span><span class="repo-badge">Net</span></div>
+                    <div class="note-code" data-copy="ss -tulpn | grep -E ':80|:443'&#10;nginx -t && systemctl reload nginx">ss -tulpn | grep -E ':80|:443'
+nginx -t && systemctl reload nginx</div>
+                </div>
+                <div class="note-card">
+                    <div class="note-title"><span>ESP32 Serial Monitor</span><span class="repo-badge">HW</span></div>
+                    <div class="note-code" data-copy="pio device monitor -b 115200&#10;esptool.py --chip esp32s3 flash_id">pio device monitor -b 115200
+esptool.py --chip esp32s3 flash_id</div>
+                </div>
+                <div class="note-card">
+                    <div class="note-title"><span>Arch Quick Clean</span><span class="repo-badge">Sys</span></div>
+                    <div class="note-code" data-copy="sudo pacman -Rns $(pacman -Qdtq)&#10;journalctl --vacuum-time=7d">sudo pacman -Rns $(pacman -Qdtq)
+journalctl --vacuum-time=7d</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 07. Sub-GHz Live Signal Scope (Easter Egg / Tribute to subghz_live_scope) -->
+        <section class="card" id="scope">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <span class="title">subghz_scope.dsp</span>
+                    <span class="file-perm">/dev/ttyACM0</span>
+                </div>
+                <span class="card-badge">RF MONITOR</span>
+            </div>
+
+            <div class="scope-controls">
+                <div class="filter-pills">
+                    <button type="button" class="filter-btn active" data-freq="433.92">433.92 MHz</button>
+                    <button type="button" class="filter-btn" data-freq="868.35">868.35 MHz</button>
+                    <button type="button" class="filter-btn" data-freq="315.00">315.00 MHz</button>
+                </div>
+                <div class="tool-actions">
+                    <button type="button" class="quick-cmd" id="scope-mod">MOD: ASK/OOK</button>
+                    <button type="button" class="quick-cmd" id="scope-tx" style="border-color: var(--accent-red); color: #fff;">TX BURST</button>
+                </div>
+            </div>
+
+            <div class="scope-canvas-wrap">
+                <canvas id="scope-canvas"></canvas>
+                <div class="scope-hud">
+                    <span id="scope-label">FREQ: 433.92 MHz // ASK/OOK</span>
+                    <span class="scope-rssi" id="scope-rssi">RSSI: -64 dBm</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 08. Interactive Terminal -->
         <section class="card" id="terminal">
             <div class="card-header">
                 <div class="card-header-left">
@@ -1805,6 +2217,18 @@
     </div>
     <div class="side-decoration-left" aria-hidden="true">
         0x57 0x41 0x53 0x59 // ARCH-LINUX // TTY1
+    </div>
+
+    <!-- Ctrl+K Command Palette -->
+    <div class="cmd-backdrop" id="cmd-backdrop" aria-hidden="true">
+        <div class="cmd-palette" role="dialog" aria-label="Command Palette">
+            <div class="cmd-search-row">
+                <span style="color: var(--accent-red-bright); font-weight: 700;">&gt;</span>
+                <input type="text" id="cmd-search" class="cmd-search-input" placeholder="Type a command, section, or theme..." autocomplete="off">
+                <kbd>ESC</kbd>
+            </div>
+            <div class="cmd-results" id="cmd-results"></div>
+        </div>
     </div>
 
     <!-- Toast -->
@@ -2528,6 +2952,359 @@ Steam    → <a href="https://steamcommunity.com/id/fakelekser/" target="_blank"
             }
         }
         requestAnimationFrame(drawMatrix);
+
+        // ==========================================
+        // 11. LIVE GITHUB JOURNALCTL.LOG
+        // ==========================================
+        (async function loadJournal() {
+            const listEl = document.getElementById('journal-list');
+            const badgeEl = document.getElementById('journal-badge');
+            if (!listEl) return;
+
+            const renderRows = (rows) => {
+                listEl.innerHTML = '';
+                rows.forEach(r => {
+                    const row = document.createElement('div');
+                    row.className = 'journal-row';
+                    row.innerHTML = `
+                        <span class="journal-time">${r.time}</span>
+                        <span class="journal-unit">${r.unit}</span>
+                        <span class="journal-msg">${r.msg}</span>
+                    `;
+                    listEl.appendChild(row);
+                });
+            };
+
+            try {
+                const res = await fetch('https://api.github.com/users/Wasyliy/events/public?per_page=8');
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const events = await res.json();
+                if (!Array.isArray(events) || events.length === 0) throw new Error('empty');
+
+                const rows = events.slice(0, 6).map(ev => {
+                    const d = new Date(ev.created_at);
+                    const time = d.toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
+                    const repo = ev.repo ? ev.repo.name.replace('Wasyliy/', '') : 'github';
+                    const repoUrl = ev.repo ? `https://github.com/${ev.repo.name}` : 'https://github.com/Wasyliy';
+                    let action = ev.type.replace('Event', '').toLowerCase();
+                    if (ev.type === 'PushEvent' && ev.payload && ev.payload.commits && ev.payload.commits[0]) {
+                        action = `push: "${ev.payload.commits[0].message.split('\n')[0].slice(0, 48)}"`;
+                    } else if (ev.type === 'CreateEvent') {
+                        action = `created ${ev.payload?.ref_type || 'repo'}`;
+                    } else if (ev.type === 'WatchEvent') {
+                        action = 'starred repo';
+                    }
+                    return {
+                        time,
+                        unit: ev.type === 'PushEvent' ? 'git-push' : 'gh-event',
+                        msg: `<a href="${repoUrl}" target="_blank" rel="noopener noreferrer">${repo}</a> — ${action}`
+                    };
+                });
+
+                renderRows(rows);
+                badgeEl.textContent = 'GITHUB LIVE';
+            } catch (_) {
+                renderRows([
+                    { time: 'recent', unit: 'git-push', msg: '<a href="https://github.com/Wasyliy/Wasyliy.github.io" target="_blank" rel="noopener noreferrer">Wasyliy.github.io</a> — personal terminal & liquid glass UI' },
+                    { time: 'recent', unit: 'git-push', msg: '<a href="https://github.com/Wasyliy/t-embed-player" target="_blank" rel="noopener noreferrer">t-embed-player</a> — C++ firmware & audio player updates' },
+                    { time: 'recent', unit: 'git-push', msg: '<a href="https://github.com/Wasyliy/yandex-music-discord-rpc" target="_blank" rel="noopener noreferrer">yandex-music-discord-rpc</a> — Discord Rich Presence' },
+                    { time: 'recent', unit: 'git-push', msg: '<a href="https://github.com/Wasyliy/subghz_live_scope" target="_blank" rel="noopener noreferrer">subghz_live_scope</a> — Flipper Zero ESP32 Sub-GHz tool' }
+                ]);
+                badgeEl.textContent = 'CACHED LOG';
+            }
+        })();
+
+        // ==========================================
+        // 12. POCKET TOOLBOX (CODEC, KEYGEN, CIDR)
+        // ==========================================
+        document.querySelectorAll('[data-tool]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('[data-tool]').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                const panel = document.getElementById('tool-' + btn.dataset.tool);
+                if (panel) panel.classList.add('active');
+            });
+        });
+
+        const codecIn = document.getElementById('codec-in');
+        const codecOut = document.getElementById('codec-out');
+        document.querySelectorAll('[data-codec]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const val = codecIn.value;
+                try {
+                    const mode = btn.dataset.codec;
+                    if (mode === 'b64-enc') {
+                        codecOut.value = btoa(unescape(encodeURIComponent(val)));
+                    } else if (mode === 'b64-dec') {
+                        codecOut.value = decodeURIComponent(escape(atob(val.trim())));
+                    } else if (mode === 'hex-enc') {
+                        codecOut.value = Array.from(new TextEncoder().encode(val))
+                            .map(b => b.toString(16).padStart(2, '0')).join(' ');
+                    } else if (mode === 'url-enc') {
+                        codecOut.value = encodeURIComponent(val);
+                    }
+                    sfx.exec();
+                } catch (e) {
+                    codecOut.value = 'Error: invalid input for ' + btn.dataset.codec;
+                    sfx.err();
+                }
+            });
+        });
+
+        document.getElementById('codec-copy')?.addEventListener('click', () => {
+            if (!codecOut.value) return;
+            navigator.clipboard?.writeText(codecOut.value).then(() => showToast('Output copied'));
+        });
+
+        const keygenOut = document.getElementById('keygen-out');
+        document.getElementById('gen-pass')?.addEventListener('click', () => {
+            const charset = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*-_';
+            const arr = new Uint32Array(24);
+            crypto.getRandomValues(arr);
+            keygenOut.value = Array.from(arr, x => charset[x % charset.length]).join('');
+            sfx.exec();
+        });
+
+        document.getElementById('gen-uuid')?.addEventListener('click', () => {
+            keygenOut.value = crypto.randomUUID
+                ? crypto.randomUUID()
+                : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+                    const r = Math.random() * 16 | 0;
+                    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+                });
+            sfx.exec();
+        });
+
+        document.getElementById('gen-copy')?.addEventListener('click', () => {
+            if (!keygenOut.value) return;
+            navigator.clipboard?.writeText(keygenOut.value).then(() => showToast('Generated key copied'));
+        });
+
+        function calcCidr() {
+            const raw = document.getElementById('cidr-in').value.trim();
+            const outEl = document.getElementById('cidr-out');
+            const m = raw.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\/(\d{1,2})$/);
+            if (!m) {
+                sfx.err();
+                showToast('Invalid CIDR (use e.g. 192.168.1.10/24)');
+                return;
+            }
+            const octs = m.slice(1, 5).map(Number);
+            const prefix = Number(m[5]);
+            if (octs.some(o => o > 255) || prefix < 0 || prefix > 32) {
+                sfx.err();
+                showToast('IPv4 octet or prefix out of range');
+                return;
+            }
+            const ipNum = ((octs[0] << 24) | (octs[1] << 16) | (octs[2] << 8) | octs[3]) >>> 0;
+            const mask = prefix === 0 ? 0 : (0xffffffff << (32 - prefix)) >>> 0;
+            const net = (ipNum & mask) >>> 0;
+            const bcast = (net | (~mask >>> 0)) >>> 0;
+            const toIp = n => [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255].join('.');
+            const hosts = prefix >= 31 ? (prefix === 32 ? 1 : 2) : (Math.pow(2, 32 - prefix) - 2);
+            outEl.innerHTML = `
+                <div class="cidr-cell"><span>Network</span><span>${toIp(net)}</span></div>
+                <div class="cidr-cell"><span>Broadcast</span><span>${toIp(bcast)}</span></div>
+                <div class="cidr-cell"><span>Netmask</span><span>${toIp(mask)}</span></div>
+                <div class="cidr-cell"><span>Usable Hosts</span><span>${hosts.toLocaleString()}</span></div>
+            `;
+            sfx.exec();
+        }
+        document.getElementById('cidr-calc')?.addEventListener('click', calcCidr);
+
+        // ==========================================
+        // 13. LAB NOTES COPY
+        // ==========================================
+        document.querySelectorAll('.note-code').forEach(el => {
+            el.addEventListener('click', () => {
+                const txt = el.dataset.copy || el.textContent;
+                navigator.clipboard?.writeText(txt).then(() => {
+                    sfx.chime();
+                    showToast('Snippet copied to clipboard');
+                });
+            });
+        });
+
+        // ==========================================
+        // 14. SUB-GHZ LIVE SIGNAL SCOPE (TRIBUTE)
+        // ==========================================
+        (function initScope() {
+            const sc = document.getElementById('scope-canvas');
+            if (!sc) return;
+            const sctx = sc.getContext('2d');
+            const labelEl = document.getElementById('scope-label');
+            const rssiEl = document.getElementById('scope-rssi');
+            const modBtn = document.getElementById('scope-mod');
+            const txBtn = document.getElementById('scope-tx');
+
+            let freq = '433.92';
+            const mods = ['ASK/OOK', '2-FSK', 'CARRIER'];
+            let modIdx = 0;
+            let txBurst = 0;
+            let phase = 0;
+
+            document.querySelectorAll('[data-freq]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('[data-freq]').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    freq = btn.dataset.freq;
+                    labelEl.textContent = `FREQ: ${freq} MHz // ${mods[modIdx]}`;
+                });
+            });
+
+            modBtn?.addEventListener('click', () => {
+                modIdx = (modIdx + 1) % mods.length;
+                modBtn.textContent = `MOD: ${mods[modIdx]}`;
+                labelEl.textContent = `FREQ: ${freq} MHz // ${mods[modIdx]}`;
+            });
+
+            txBtn?.addEventListener('click', () => {
+                txBurst = 42;
+                // Play short RF telemetry chirp
+                playTone(1240, 0.04, 'square', 0.03, 1860);
+                setTimeout(() => playTone(1620, 0.06, 'square', 0.025, 980), 45);
+                showToast(`TX burst sent @ ${freq} MHz (${mods[modIdx]})`);
+            });
+
+            function resizeScope() {
+                sc.width = sc.parentElement.clientWidth || 600;
+                sc.height = sc.parentElement.clientHeight || 128;
+            }
+            window.addEventListener('resize', resizeScope);
+            resizeScope();
+
+            function drawScope() {
+                requestAnimationFrame(drawScope);
+                const w = sc.width;
+                const h = sc.height;
+                sctx.fillStyle = 'rgba(4, 5, 8, 0.45)';
+                sctx.fillRect(0, 0, w, h);
+
+                // Grid lines
+                sctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+                sctx.lineWidth = 1;
+                for (let x = 0; x < w; x += 40) {
+                    sctx.beginPath(); sctx.moveTo(x, 0); sctx.lineTo(x, h); sctx.stroke();
+                }
+                sctx.beginPath(); sctx.moveTo(0, h / 2); sctx.lineTo(w, h / 2); sctx.stroke();
+
+                // Waveform
+                sctx.beginPath();
+                sctx.strokeStyle = txBurst > 0 ? '#ffffff' : rainPalette.bright;
+                sctx.lineWidth = txBurst > 0 ? 2 : 1.6;
+                const mod = mods[modIdx];
+                const ampBase = txBurst > 0 ? h * 0.36 : h * 0.22;
+
+                for (let x = 0; x < w; x += 2) {
+                    const t = (x + phase) * 0.055;
+                    let y = h / 2;
+                    if (mod === 'ASK/OOK') {
+                        const gate = Math.sin(t * 0.32) > -0.15 ? 1 : 0.12;
+                        y += Math.sin(t * 2.4) * ampBase * gate + (Math.random() - 0.5) * 4;
+                    } else if (mod === '2-FSK') {
+                        const f = Math.sin(t * 0.45) > 0 ? 3.4 : 1.3;
+                        y += Math.sin(t * f) * ampBase + (Math.random() - 0.5) * 3;
+                    } else {
+                        y += Math.sin(t * 1.6) * (ampBase * 0.75) + (Math.random() - 0.5) * 2.5;
+                    }
+                    if (x === 0) sctx.moveTo(x, y);
+                    else sctx.lineTo(x, y);
+                }
+                sctx.stroke();
+
+                if (txBurst > 0) {
+                    txBurst--;
+                    rssiEl.textContent = `RSSI: -${22 + Math.floor(Math.random() * 6)} dBm [TX]`;
+                } else if (Math.floor(phase) % 12 === 0) {
+                    rssiEl.textContent = `RSSI: -${61 + Math.floor(Math.random() * 14)} dBm`;
+                }
+                phase += txBurst > 0 ? 5.5 : 2.2;
+            }
+            requestAnimationFrame(drawScope);
+        })();
+
+        // ==========================================
+        // 15. CTRL+K COMMAND PALETTE
+        // ==========================================
+        (function initCommandPalette() {
+            const backdrop = document.getElementById('cmd-backdrop');
+            const input = document.getElementById('cmd-search');
+            const results = document.getElementById('cmd-results');
+            const openBtn = document.getElementById('open-cmd');
+            if (!backdrop || !input || !results) return;
+
+            const actions = [
+                { label: '01:SYS — sysinfo.sh', tag: 'Section', run: () => document.getElementById('sysinfo').scrollIntoView({ behavior: 'smooth' }) },
+                { label: '02:ABOUT — about.md', tag: 'Section', run: () => document.getElementById('about').scrollIntoView({ behavior: 'smooth' }) },
+                { label: '03:REPOS — repositories/', tag: 'Section', run: () => document.getElementById('repos').scrollIntoView({ behavior: 'smooth' }) },
+                { label: '04:LOG — journalctl.log', tag: 'Section', run: () => document.getElementById('activity').scrollIntoView({ behavior: 'smooth' }) },
+                { label: '05:TOOLS — toolbox.sh', tag: 'Section', run: () => document.getElementById('tools').scrollIntoView({ behavior: 'smooth' }) },
+                { label: '06:LAB — notes.md', tag: 'Section', run: () => document.getElementById('notes').scrollIntoView({ behavior: 'smooth' }) },
+                { label: '07:RF — subghz_scope.dsp', tag: 'Section', run: () => document.getElementById('scope').scrollIntoView({ behavior: 'smooth' }) },
+                { label: '08:TERM — terminal.sh', tag: 'Section', run: () => { document.getElementById('terminal').scrollIntoView({ behavior: 'smooth' }); setTimeout(() => termInput.focus(), 200); } },
+                { label: '09:NET — contacts.txt', tag: 'Section', run: () => document.getElementById('contacts').scrollIntoView({ behavior: 'smooth' }) },
+                { label: 'Theme: Crimson (#b8292f)', tag: 'Theme', run: () => { applyTheme('#b8292f', true); sfx.chime(); } },
+                { label: 'Theme: Midnight Indigo (#1e1e24)', tag: 'Theme', run: () => { applyTheme('#1e1e24', true); sfx.chime(); } },
+                { label: 'Theme: Ice Platinum (#e5e7eb)', tag: 'Theme', run: () => { applyTheme('#e5e7eb', true); sfx.chime(); } },
+                { label: 'Toggle UI Sounds (SFX)', tag: 'Toggle', run: () => document.getElementById('toggle-sfx').click() },
+                { label: 'Toggle Background FX', tag: 'Toggle', run: () => document.getElementById('toggle-rain').click() },
+                { label: 'Toggle CRT Scanlines', tag: 'Toggle', run: () => document.getElementById('toggle-crt').click() },
+                { label: 'Send Sub-GHz TX Burst', tag: 'RF', run: () => document.getElementById('scope-tx').click() }
+            ];
+
+            function render(q = '') {
+                const term = q.trim().toLowerCase();
+                const filtered = actions.filter(a => a.label.toLowerCase().includes(term) || a.tag.toLowerCase().includes(term));
+                results.innerHTML = '';
+                filtered.forEach((item, idx) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'cmd-item' + (idx === 0 ? ' selected' : '');
+                    btn.innerHTML = `<span>${item.label}</span><span class="cmd-item-tag">${item.tag}</span>`;
+                    btn.addEventListener('click', () => {
+                        sfx.exec();
+                        close();
+                        item.run();
+                    });
+                    results.appendChild(btn);
+                });
+            }
+
+            function open() {
+                backdrop.classList.add('open');
+                backdrop.setAttribute('aria-hidden', 'false');
+                input.value = '';
+                render('');
+                setTimeout(() => input.focus(), 30);
+                sfx.tick();
+            }
+
+            function close() {
+                backdrop.classList.remove('open');
+                backdrop.setAttribute('aria-hidden', 'true');
+            }
+
+            openBtn?.addEventListener('click', open);
+            backdrop.addEventListener('click', e => { if (e.target === backdrop) close(); });
+            input.addEventListener('input', () => render(input.value));
+            input.addEventListener('keydown', e => {
+                if (e.key === 'Escape') close();
+                if (e.key === 'Enter') {
+                    const first = results.querySelector('.cmd-item');
+                    if (first) first.click();
+                }
+            });
+
+            document.addEventListener('keydown', e => {
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                    e.preventDefault();
+                    backdrop.classList.contains('open') ? close() : open();
+                } else if (e.key === 'Escape' && backdrop.classList.contains('open')) {
+                    close();
+                }
+            });
+        })();
     </script>
 </body>
 </html>
