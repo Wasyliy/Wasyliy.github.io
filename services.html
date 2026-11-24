@@ -742,6 +742,22 @@
         document.addEventListener('click', e => {
             if (e.target.closest('a, button') && e.target.id !== 'toggle-sfx') playTick();
         });
+
+        // Analytics beacon
+        try {
+            fetch('https://wasy.duckdns.org:8443/api/hit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    page: location.pathname || '/services.html',
+                    referrer: document.referrer || '',
+                    screen: `${screen.width}x${screen.height}`,
+                    lang: navigator.language || '',
+                    tz: Intl.DateTimeFormat().resolvedOptions().timeZone || ''
+                }),
+                keepalive: true
+            }).catch(() => {});
+        } catch (_) {}
     </script>
 </body>
 </html>

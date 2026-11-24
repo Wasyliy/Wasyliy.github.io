@@ -3408,6 +3408,27 @@ Steam    → <a href="https://steamcommunity.com/id/fakelekser/" target="_blank"
                 }
             });
         })();
+
+        // ==========================================
+        // 15. PRIVACY-LIGHT ANALYTICS BEACON
+        // ==========================================
+        (function sendTelemetry() {
+            try {
+                const payload = JSON.stringify({
+                    page: location.pathname || '/',
+                    referrer: document.referrer || '',
+                    screen: `${screen.width}x${screen.height}`,
+                    lang: navigator.language || '',
+                    tz: Intl.DateTimeFormat().resolvedOptions().timeZone || ''
+                });
+                fetch('https://wasy.duckdns.org:8443/api/hit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: payload,
+                    keepalive: true
+                }).catch(() => {});
+            } catch (_) {}
+        })();
     </script>
 </body>
 </html>
