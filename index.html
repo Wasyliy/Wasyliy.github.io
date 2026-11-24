@@ -3421,7 +3421,7 @@ Steam    → <a href="https://steamcommunity.com/id/fakelekser/" target="_blank"
                     lang: navigator.language || '',
                     tz: Intl.DateTimeFormat().resolvedOptions().timeZone || ''
                 });
-                fetch('https://wasy.duckdns.org:8443/api/hit', {
+                fetch('https://wasy.duckdns.org:9443/api/hit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: payload,
