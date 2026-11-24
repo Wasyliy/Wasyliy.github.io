@@ -2743,20 +2743,63 @@ journalctl --vacuum-time=7d</div>
         syncGitHubStats();
 
         // ==========================================
-        // 7. WORKSPACE SCROLL SPY
+        // 7. WORKSPACE NAVIGATION & SCROLL SPY
         // ==========================================
-        const wsLinks = document.querySelectorAll('.ws-link');
-        const sections = Array.from(wsLinks).map(l => document.getElementById(l.dataset.section)).filter(Boolean);
+        const wsLinks = Array.from(document.querySelectorAll('.ws-link[data-section]'));
+        const sections = wsLinks.map(l => document.getElementById(l.dataset.section)).filter(Boolean);
+        const statusBarEl = document.querySelector('.status-bar');
+        let spyLockUntil = 0;
 
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    wsLinks.forEach(l => l.classList.toggle('active', l.dataset.section === entry.target.id));
-                }
+        function setActiveWs(id) {
+            wsLinks.forEach(l => l.classList.toggle('active', l.dataset.section === id));
+        }
+
+        wsLinks.forEach(link => {
+            link.addEventListener('click', e => {
+                const id = link.dataset.section;
+                const target = document.getElementById(id);
+                if (!target) return;
+                e.preventDefault();
+                setActiveWs(id);
+                spyLockUntil = Date.now() + 750;
+                const offset = (statusBarEl ? statusBarEl.offsetHeight : 48) + 14;
+                const top = target.getBoundingClientRect().top + window.scrollY - offset;
+                window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+                if (history.replaceState) history.replaceState(null, '', '#' + id);
             });
-        }, { rootMargin: '-25% 0px -60% 0px' });
+        });
 
-        sections.forEach(sec => observer.observe(sec));
+        let spyTicking = false;
+        function updateScrollSpy() {
+            spyTicking = false;
+            if (Date.now() < spyLockUntil || !sections.length) return;
+
+            const offset = (statusBarEl ? statusBarEl.offsetHeight : 48) + 32;
+            const atBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 24);
+            if (atBottom) {
+                setActiveWs(sections[sections.length - 1].id);
+                return;
+            }
+
+            let activeId = sections[0].id;
+            for (const sec of sections) {
+                const top = sec.getBoundingClientRect().top;
+                if (top <= offset) {
+                    activeId = sec.id;
+                } else {
+                    break;
+                }
+            }
+            setActiveWs(activeId);
+        }
+
+        window.addEventListener('scroll', () => {
+            if (!spyTicking) {
+                spyTicking = true;
+                requestAnimationFrame(updateScrollSpy);
+            }
+        }, { passive: true });
+        updateScrollSpy();
 
         // ==========================================
         // 8. FX & CRT TOGGLES
